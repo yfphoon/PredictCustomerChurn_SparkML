@@ -42,7 +42,7 @@ def predictDefault(ID,Gender,Status,Children,EstIncome,CarOwner,Age,LongDistance
 	header_online = {'Content-Type': 'application/json', 'Authorization': "Bearer " + mltoken}
 	scoring_href = 'https://ibm-watson-ml.mybluemix.net/v3/wml_instances/2d66a4d8-b28f-47c3-a667-8d7409861f75/published_models/03d74b90-b22e-4ca0-a278-aa063841d8ee/deployments/0b4e5b68-c9a0-4a20-8548-d0b63739a73d/online'
 	
-	sample_data = {
+	payload_scoring = {
     "fields": [
     "ID",
     "Gender",
@@ -63,8 +63,7 @@ def predictDefault(ID,Gender,Status,Children,EstIncome,CarOwner,Age,LongDistance
     ],
     "values": [ [ID,Gender,Status,Children,EstIncome,CarOwner,Age,LongDistance,International,Local,Dropped,Paymethod,LocalBilltype,LongDistanceBilltype,Usage,RatePlan] ]}
 	
-	payload_scoring = json.dumps(sample_data)
-	response_scoring = requests.post(scoring_href, data=payload_scoring, headers=header_online)
+	response_scoring = requests.post(scoring_href, json=payload_scoring, headers=header_online)
 	
 	result = response_scoring.text
 	print(result)
