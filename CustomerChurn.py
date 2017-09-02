@@ -31,19 +31,43 @@ db = SQLAlchemy(app)
 def predictDefault(ID,Gender,Status,Children,EstIncome,CarOwner,Age,LongDistance,International,Local,Dropped,Paymethod,LocalBilltype,LongDistanceBilltype,Usage,RatePlan):
 	
 	service_path = 'https://ibm-watson-ml.mybluemix.net'
-	username = 'db7336ae-b258-4b0c-9bd2-57ca9d090f08'
-	password = 'ff129993-058d-472b-bbcb-edf40568b6c8'
-
+	username = '87e7050e-9f43-426b-bd99-dac47c471ff2'
+	password = '45cd5b72-79ae-4516-8e12-23acca895598'
+	
 	headers = urllib3.util.make_headers(basic_auth='{}:{}'.format(username, password))
 	url = '{}/v2/identity/token'.format(service_path)
 	response = requests.get(url, headers=headers)
 	mltoken = json.loads(response.text).get('token')
-	header_online = {'Content-Type': 'application/json', 'Authorization': mltoken}
-	scoring_href = "https://ibm-watson-ml.mybluemix.net/32768/v2/scoring/3194"
-	payload_scoring = ({"record":[ID,Gender,Status,Children,EstIncome,CarOwner,Age,LongDistance,International,Local,Dropped,Paymethod,LocalBilltype,LongDistanceBilltype,Usage,RatePlan]})
-	response_scoring = requests.put(scoring_href, json=payload_scoring, headers=header_online)
+
+	header_online = {'Content-Type': 'application/json', 'Authorization': "Bearer " + mltoken}
+	scoring_href = 'https://ibm-watson-ml.mybluemix.net/v3/wml_instances/2d66a4d8-b28f-47c3-a667-8d7409861f75/published_models/03d74b90-b22e-4ca0-a278-aa063841d8ee/deployments/0b4e5b68-c9a0-4a20-8548-d0b63739a73d/online'
+	
+	sample_data = {
+    "fields": [
+    "ID",
+    "Gender",
+    "Status",
+    "Children",
+    "EstIncome",
+    "CarOwner",
+    "Age",
+    "LongDistance",
+    "International",
+    "Local",
+    "Dropped",
+    "Paymethod",
+    "LocalBilltype",
+    "LongDistanceBilltype",
+    "Usage",
+    "RatePlan"
+    ],
+    "values": [ [ID,Gender,Status,Children,EstIncome,CarOwner,Age,LongDistance,International,Local,Dropped,Paymethod,LocalBilltype,LongDistanceBilltype,Usage,RatePlan] ]}
+	
+	payload_scoring = json.dumps(sample_data)
+	response_scoring = requests.post(scoring_href, data=payload_scoring, headers=header_online)
 	
 	result = response_scoring.text
+	print(result)
 	return response_scoring
 
 
@@ -105,9 +129,8 @@ def index():
 
 
 		response_scoring = predictDefault(ID,Gender,Status,Children,EstIncome,CarOwner,Age,LongDistance,International,Local,Dropped,Paymethod,LocalBilltype,LongDistanceBilltype,Usage,RatePlan)
-
-		prediction = response_scoring.json()["result"]["prediction"]
-		probability = response_scoring.json()["result"]["probability"]["values"][1]
+		prediction = response_scoring.json()["values"][0][27]
+		probability= response_scoring.json()["values"][0][26][1]
 
 		session['prediction'] = prediction
 		session['probability'] = probability
