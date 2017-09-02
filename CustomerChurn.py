@@ -31,8 +31,8 @@ db = SQLAlchemy(app)
 def predictDefault(ID,Gender,Status,Children,EstIncome,CarOwner,Age,LongDistance,International,Local,Dropped,Paymethod,LocalBilltype,LongDistanceBilltype,Usage,RatePlan):
 	
 	service_path = 'https://ibm-watson-ml.mybluemix.net'
-	username = '87e7050e-9f43-426b-bd99-dac47c471ff2'
-	password = '45cd5b72-79ae-4516-8e12-23acca895598'
+	username = '********'
+	password = '*******'
 	
 	headers = urllib3.util.make_headers(basic_auth='{}:{}'.format(username, password))
 	url = '{}/v2/identity/token'.format(service_path)
